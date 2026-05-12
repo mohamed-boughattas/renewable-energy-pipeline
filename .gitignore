@@ -1,0 +1,24 @@
+# Environment and secrets
+.env
+.dlt/
+
+# Virtual environments
+.venv
+
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Testing
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# dbt
+dbt/target/
+dbt/logs/
