@@ -1,0 +1,26 @@
+SELECT country_code, year_month, total_renewable_mwh, total_fossil_mwh, total_production_mwh, renewable_share_pct
+FROM gld_monthly_production_summary
+WHERE year_month >= '2024-01-01'
+
+VISUALISE year_month AS x, total_production_mwh AS y, country_code AS color
+DRAW line
+SCALE x SETTING breaks => 'month'
+LABEL title => 'Monthly Energy Production by Country'
+
+
+SELECT country_code, country_name, avg_renewable_share_pct, total_renewable_mwh
+FROM gld_country_renewable_ranking
+
+VISUALISE country_name AS x, avg_renewable_share_pct AS y
+DRAW bar
+LABEL title => 'Average Renewable Share by Country'
+
+
+SELECT country_code, year_month, co2_avoided_tons
+FROM gld_co2_savings_by_country
+WHERE year_month >= '2024-01-01'
+
+VISUALISE year_month AS x, co2_avoided_tons AS y, country_code AS color
+DRAW line
+SCALE x SETTING breaks => 'month'
+LABEL title => 'Monthly CO2 Avoided by Country'
