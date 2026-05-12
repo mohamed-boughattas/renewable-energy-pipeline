@@ -1,0 +1,112 @@
+version: 2
+
+models:
+  - name: gld_monthly_production_summary
+    description: "Monthly production aggregates with renewable share per country"
+    columns:
+      - name: country_code
+        tests: [not_null]
+      - name: year_month
+        tests: [not_null]
+      - name: total_production_mwh
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: total_renewable_mwh
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: total_fossil_mwh
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: renewable_share_pct
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 100
+          - dbt_expectations.expect_column_mean_to_be_between:
+              min_value: 5
+              max_value: 95
+    tests:
+      - dbt_expectations.expect_compound_columns_to_be_unique:
+          column_list: ["country_code", "year_month"]
+      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
+          column_A: total_production_mwh
+          column_B: total_renewable_mwh
+          or_equal: true
+      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
+          column_A: total_production_mwh
+          column_B: total_fossil_mwh
+          or_equal: true
+      - dbt_expectations.expect_table_row_count_to_be_between:
+          min_value: 6
+
+  - name: gld_country_renewable_ranking
+    description: "Country ranking by renewable energy metrics"
+    columns:
+      - name: country_code
+        tests:
+          - not_null
+          - unique
+          - dbt_expectations.expect_column_distinct_count_to_equal:
+              value: 6
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: ['DE', 'FR', 'ES', 'DK', 'NO', 'NL']
+      - name: avg_renewable_share_pct
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 100
+          - dbt_expectations.expect_column_mean_to_be_between:
+              min_value: 10
+              max_value: 90
+      - name: rank_renewable_share
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+              max_value: 6
+      - name: rank_total_renewable
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+              max_value: 6
+    tests:
+      - dbt_expectations.expect_table_row_count_to_be_between:
+          min_value: 1
+          max_value: 6
+
+  - name: gld_co2_savings_by_country
+    description: "Monthly CO2 savings per country from renewable energy"
+    columns:
+      - name: country_code
+        tests: [not_null]
+      - name: year_month
+        tests: [not_null]
+      - name: co2_avoided_tons
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: equivalent_cars_removed
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: equivalent_trees_planted
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+    tests:
+      - dbt_expectations.expect_compound_columns_to_be_unique:
+          column_list: ["country_code", "year_month"]
+      - dbt_expectations.expect_table_row_count_to_equal_other_table:
+          compare_model: ref("gld_monthly_production_summary")

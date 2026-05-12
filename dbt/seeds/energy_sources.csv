@@ -1,0 +1,24 @@
+code,name,category
+B01,Biomass,renewable
+B02,Fossil Brown coal/Lignite,fossil
+B03,Fossil Coal-derived gas,fossil
+B04,Fossil Gas,fossil
+B05,Fossil Hard coal,fossil
+B06,Fossil Oil,fossil
+B07,Fossil Oil shale,fossil
+B08,Fossil Peat,fossil
+B09,Geothermal,renewable
+B10,Hydro Pumped Storage,renewable
+B11,Hydro Run-of-river and poundage,renewable
+B12,Hydro Water Reservoir,renewable
+B13,Marine,renewable
+B14,Nuclear,nuclear
+B15,Other renewable,renewable
+B16,Solar,renewable
+B17,Wind Onshore,renewable
+B18,Wind Offshore,renewable
+B19,Other,other
+B20,AC Link,other
+B21,DC Link,other
+B22,Substation,other
+B23,Transformer,other

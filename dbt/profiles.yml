@@ -1,0 +1,12 @@
+renewable_energy_tracker:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('POSTGRES_HOST', 'localhost') }}"
+      port: "{{ env_var('POSTGRES_PORT', '5432') | int }}"
+      user: "{{ env_var('POSTGRES_USER', 'renewable') }}"
+      password: "{{ env_var('POSTGRES_PASSWORD', 'renewable123') }}"
+      dbname: "{{ env_var('POSTGRES_DB', 'renewable_energy') }}"
+      schema: public
+      threads: 4

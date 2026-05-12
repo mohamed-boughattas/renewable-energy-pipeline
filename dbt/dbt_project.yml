@@ -1,0 +1,33 @@
+name: "renewable_energy_tracker"
+version: "1.0.0"
+
+profile: "renewable_energy_tracker"
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: "target"
+
+models:
+  renewable_energy_tracker:
+    bronze:
+      +materialized: view
+    silver:
+      +materialized: view
+    gold:
+      +materialized: table
+
+seeds:
+  renewable_energy_tracker:
+    +schema: seed
+
+vars:
+  entsoe_domain_map:
+    DE: "10Y1001A1001A83F"
+    FR: "10YFR-RTE------C"
+    ES: "10YES-REE------0"
+    DK: "10Y1001A1001A65H"
+    NO: "10YNO-0--------C"
+    NL: "10YNL----------L"
+  grid_avg_emission_factor: 0.45
