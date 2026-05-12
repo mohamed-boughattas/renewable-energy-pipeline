@@ -1,0 +1,54 @@
+from shiny import App, Inputs, Outputs, Session, ui
+
+from renewable_energy_tracker.app.components.co2_savings import (
+    co2_savings_server,
+    co2_savings_ui,
+)
+from renewable_energy_tracker.app.components.comparison import (
+    comparison_server,
+    comparison_ui,
+)
+from renewable_energy_tracker.app.components.overview import (
+    overview_server,
+    overview_ui,
+)
+from renewable_energy_tracker.app.components.timeseries import (
+    timeseries_server,
+    timeseries_ui,
+)
+from renewable_energy_tracker.app.query import DbConnection
+
+app_ui = ui.page_sidebar(
+    ui.sidebar(
+        ui.h4("Renewable Energy Tracker"),
+        ui.p("European energy production monitoring"),
+        ui.hr(),
+        ui.p("Data source: ENTSO-E Transparency Platform"),
+    ),
+    ui.navset_card_underline(
+        ui.nav_panel("Overview", overview_ui()),
+        ui.nav_panel("Time Series", timeseries_ui()),
+        ui.nav_panel("Country Comparison", comparison_ui()),
+        ui.nav_panel("CO2 Savings", co2_savings_ui()),
+    ),
+    title="Renewable Energy Tracker",
+)
+
+
+def server(input: Inputs, output: Outputs, session: Session) -> None:
+    """Register all module server functions and wire cleanup.
+
+    Args:
+        input: Shiny input values.
+        output: Shiny output bindings.
+        session: Shiny session object.
+    """
+    session.on_ended(DbConnection.close_pool)
+
+    overview_server(input, output, session)
+    timeseries_server(input, output, session)
+    comparison_server(input, output, session)
+    co2_savings_server(input, output, session)
+
+
+app = App(app_ui, server)
