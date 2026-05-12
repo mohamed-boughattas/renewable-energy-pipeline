@@ -1,0 +1,146 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  POSTGRES_HOST: localhost
+  POSTGRES_PORT: 5432
+  POSTGRES_DB: renewable_energy
+  POSTGRES_USER: renewable
+  POSTGRES_PASSWORD: renewable123
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Ruff check
+        run: uv run ruff check src/ tests/
+
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: ty
+        run: uv run ty check src/
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Run pytest
+        run: uv run pytest -v
+
+  dbt-deps:
+    name: dbt Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dbt
+        run: pip install dbt-postgres
+
+      - name: Install dbt packages
+        working-directory: dbt
+        run: dbt deps --profiles-dir .
+
+  dbt-test:
+    name: dbt Tests
+    runs-on: ubuntu-latest
+    needs: [dbt-deps]
+    services:
+      postgres:
+        image: postgres:16
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          POSTGRES_DB: renewable_energy
+          POSTGRES_USER: renewable
+          POSTGRES_PASSWORD: renewable123
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dbt
+        run: pip install dbt-postgres
+
+      - name: Install dbt packages
+        working-directory: dbt
+        run: dbt deps --profiles-dir .
+
+      - name: dbt seed
+        working-directory: dbt
+        run: dbt seed --profiles-dir . --target dev
+        env:
+          POSTGRES_HOST: localhost
+
+      - name: dbt run
+        working-directory: dbt
+        run: dbt run --profiles-dir . --target dev
+        env:
+          POSTGRES_HOST: localhost
+
+      - name: dbt test
+        working-directory: dbt
+        run: dbt test --profiles-dir . --target dev
+        env:
+          POSTGRES_HOST: localhost
+
+  soda-scan:
+    name: Soda Data Quality
+    runs-on: ubuntu-latest
+    needs: [dbt-test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Soda scan
+        uses: sodadata/soda-github-action@main
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: "5432"
+          POSTGRES_DB: renewable_energy
+          POSTGRES_USER: renewable
+          POSTGRES_PASSWORD: renewable123
+        with:
+          soda_library_version: v1.0.4
+          data_source: ret_postgres
+          configuration: ./soda/configuration.yml
+          checks: ./soda/checks_raw.yml ./soda/checks_gold.yml

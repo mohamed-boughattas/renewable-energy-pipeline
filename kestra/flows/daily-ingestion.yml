@@ -1,0 +1,105 @@
+id: daily-ingestion
+namespace: renewable_energy_tracker
+
+description: |
+  Daily ingestion flow: Fetch yesterday's energy production data
+  from ENTSO-E for all monitored countries, validate with Pandera,
+  load into PostgreSQL, then run dbt transformations and tests.
+
+triggers:
+  - id: daily_schedule
+    type: io.kestra.plugin.core.trigger.Schedule
+    cron: "0 8 * * *"
+    timezone: UTC
+
+tasks:
+  - id: fetch_and_load
+    type: io.kestra.plugin.scripts.python.Script
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+    containerImage: ghcr.io/yourusername/renewable-energy-tracker/python:latest
+    env:
+      ENTSOE_API_KEY: "{{ secret('ENTSOE_API_KEY') }}"
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: renewable_energy
+      POSTGRES_USER: renewable
+      POSTGRES_PASSWORD: renewable123
+    script: |
+      import logging
+      from datetime import date, timedelta
+
+      from renewable_energy_tracker.config import COUNTRY_CODES, get_settings
+      from renewable_energy_tracker.extract.entsoe_client import EntsoeClient
+      from renewable_energy_tracker.load.db_loader import DbLoader
+
+      logging.basicConfig(level=logging.INFO)
+      logger = logging.getLogger(__name__)
+
+      settings = get_settings()
+      settings.postgres_host = "postgres"
+
+      client = EntsoeClient(api_key=settings.entsoe_api_key)
+      loader = DbLoader(settings)
+      loader.connect()
+
+      yesterday = date.today() - timedelta(days=1)
+      total_loaded = 0
+
+      for country in COUNTRY_CODES:
+          try:
+              payload = client.fetch_daily_production(country, yesterday)
+              df = EntsoeClient.payload_to_dataframe(payload)
+              df = EntsoeClient.aggregate_daily(df)
+              loaded = loader.load_dataframe(df)
+              total_loaded += loaded
+              logger.info("Loaded %d records for %s", loaded, country)
+          except Exception as e:
+              logger.error("Failed for %s: %s", country, e)
+
+      loader.close()
+      logger.info("Total records loaded: %d", total_loaded)
+
+  - id: dbt_seed
+    type: io.kestra.plugin.dbt.cli.DbtCLI
+    containerImage: ghcr.io/dbt-labs/dbt-postgres:latest
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+    env:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: renewable_energy
+      POSTGRES_USER: renewable
+      POSTGRES_PASSWORD: renewable123
+    beforeCommands:
+      - cp -r /app/flows/../../dbt /tmp/dbt_project
+    commands:
+      - dbt seed --project-dir /tmp/dbt_project --profiles-dir /tmp/dbt_project
+
+  - id: dbt_run
+    type: io.kestra.plugin.dbt.cli.DbtCLI
+    containerImage: ghcr.io/dbt-labs/dbt-postgres:latest
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+    env:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: renewable_energy
+      POSTGRES_USER: renewable
+      POSTGRES_PASSWORD: renewable123
+    commands:
+      - dbt run --project-dir /tmp/dbt_project --profiles-dir /tmp/dbt_project
+
+  - id: dbt_test
+    type: io.kestra.plugin.dbt.cli.DbtCLI
+    containerImage: ghcr.io/dbt-labs/dbt-postgres:latest
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+    env:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: renewable_energy
+      POSTGRES_USER: renewable
+      POSTGRES_PASSWORD: renewable123
+    commands:
+      - dbt test --project-dir /tmp/dbt_project --profiles-dir /tmp/dbt_project
