@@ -6,7 +6,7 @@ from typing import Any
 import dlt
 from dlt.sources.helpers import requests
 
-from renewable_energy_pipeline.config import EMBER_BASE_URL
+from renewable_energy_pipeline.config import EMBER_BASE_URL, EMBER_ENDPOINTS
 
 
 @dlt.source
@@ -61,9 +61,10 @@ def ember_source(api_key: str = dlt.secrets.value) -> Any:
 
 
 def _fetch_category(category: str, api_key: str) -> Iterator[dict]:
-    url = f"{EMBER_BASE_URL}/{category}/monthly"
-    headers = {"Authorization": f"Bearer {api_key}"}
-    response = requests.get(url, headers=headers, timeout=120)
+    endpoint = EMBER_ENDPOINTS[category]
+    url = f"{EMBER_BASE_URL}{endpoint}"
+    params = {"api_key": api_key}
+    response = requests.get(url, params=params, timeout=120)
     response.raise_for_status()
     data = response.json()
 

@@ -1,12 +1,20 @@
 from renewable_energy_pipeline.config import (
     EMBER_BASE_URL,
+    EMBER_ENDPOINTS,
     EMISSION_FACTORS,
     SERIES_CATEGORIES,
 )
 
 
 def test_ember_base_url() -> None:
-    assert EMBER_BASE_URL == "https://api.ember-climate.org/v1/electricity"
+    assert EMBER_BASE_URL == "https://api.ember-energy.org/v1"
+
+
+def test_ember_endpoints() -> None:
+    assert len(EMBER_ENDPOINTS) == 5
+    for category in ["generation", "capacity", "demand", "emissions", "carbon_intensity"]:
+        assert category in EMBER_ENDPOINTS
+        assert EMBER_ENDPOINTS[category].startswith("/")
 
 
 def test_series_categories() -> None:

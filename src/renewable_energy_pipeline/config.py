@@ -8,7 +8,15 @@ class Settings(BaseSettings):
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
 
-EMBER_BASE_URL = "https://api.ember-climate.org/v1/electricity"
+EMBER_BASE_URL = "https://api.ember-energy.org/v1"
+
+EMBER_ENDPOINTS: dict[str, str] = {
+    "generation": "/electricity-generation/monthly",
+    "capacity": "/installed-capacity/monthly",
+    "demand": "/electricity-demand/monthly",
+    "emissions": "/power-sector-emissions/monthly",
+    "carbon_intensity": "/carbon-intensity/monthly",
+}
 
 SERIES_CATEGORIES: dict[str, list[str]] = {
     "generation": [
