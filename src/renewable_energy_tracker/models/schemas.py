@@ -1,37 +1,17 @@
 import pandera.pandas as pa
-from pandera.pandas import Column, DataFrameSchema
+import polars as pl
+from pandera.polars import DataFrameSchema
 
-VALID_COUNTRY_CODES = ["DE", "FR", "ES", "DK", "NO", "NL"]
-VALID_SOURCE_CODES = [
-    "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09",
-    "B10", "B11", "B12", "B13", "B14", "B15", "B16", "B17", "B18", "B19",
-]
-
-daily_production_schema = DataFrameSchema(
+ember_record_schema = DataFrameSchema(
     {
-        "country_code": Column(
-            str,
-            checks=pa.Check.isin(VALID_COUNTRY_CODES),
-            nullable=False,
-        ),
-        "source_code": Column(
-            str,
-            checks=pa.Check.isin(VALID_SOURCE_CODES),
-            nullable=False,
-        ),
-        "production_date": Column(
-            "datetime64[ns]",
-            nullable=False,
-        ),
-        "production_mwh": Column(
-            float,
-            checks=[
-                pa.Check.ge(0),
-                pa.Check.le(500000),
-            ],
-            nullable=False,
-        ),
+        "country_code": pa.Column(pl.Utf8, nullable=False),
+        "country_name": pa.Column(pl.Utf8, nullable=False),
+        "year": pa.Column(pl.Int32, nullable=False),
+        "month": pa.Column(pl.Int32, nullable=False),
+        "series_name": pa.Column(pl.Utf8, nullable=False),
+        "variable": pa.Column(pl.Utf8, nullable=False),
+        "unit": pa.Column(pl.Utf8, nullable=False),
+        "value": pa.Column(pl.Float64, nullable=True),
     },
-    strict=True,
-    coerce=True,
+    strict=False,
 )

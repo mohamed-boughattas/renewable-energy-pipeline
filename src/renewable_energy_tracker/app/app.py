@@ -16,14 +16,13 @@ from renewable_energy_tracker.app.components.timeseries import (
     timeseries_server,
     timeseries_ui,
 )
-from renewable_energy_tracker.app.query import DbConnection
 
 app_ui = ui.page_sidebar(
     ui.sidebar(
         ui.h4("Renewable Energy Tracker"),
-        ui.p("European energy production monitoring"),
+        ui.p("Global energy production monitoring"),
         ui.hr(),
-        ui.p("Data source: ENTSO-E Transparency Platform"),
+        ui.p("Data source: Ember Climate API"),
     ),
     ui.navset_card_underline(
         ui.nav_panel("Overview", overview_ui()),
@@ -36,15 +35,6 @@ app_ui = ui.page_sidebar(
 
 
 def server(input: Inputs, output: Outputs, session: Session) -> None:
-    """Register all module server functions and wire cleanup.
-
-    Args:
-        input: Shiny input values.
-        output: Shiny output bindings.
-        session: Shiny session object.
-    """
-    session.on_ended(DbConnection.close_pool)
-
     overview_server(input, output, session)
     timeseries_server(input, output, session)
     comparison_server(input, output, session)

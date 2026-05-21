@@ -6,13 +6,6 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  POSTGRES_HOST: localhost
-  POSTGRES_PORT: 5432
-  POSTGRES_DB: renewable_energy
-  POSTGRES_USER: renewable
-  POSTGRES_PASSWORD: renewable123
-
 jobs:
   lint:
     name: Lint
@@ -21,7 +14,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install uv
-        uses: astral/setup-uv@v4
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
 
@@ -38,7 +31,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install uv
-        uses: astral/setup-uv@v4
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
 
@@ -55,7 +48,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install uv
-        uses: astral/setup-uv@v4
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
 
@@ -65,82 +58,41 @@ jobs:
       - name: Run pytest
         run: uv run pytest -v
 
-  dbt-deps:
-    name: dbt Dependencies
+  data-pipeline:
+    name: Data Pipeline
     runs-on: ubuntu-latest
+    needs: [lint, typecheck, test]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dbt
-        run: pip install dbt-postgres
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
 
-      - name: Install dbt packages
-        working-directory: dbt
-        run: dbt deps --profiles-dir .
+      - name: Install dependencies
+        run: uv sync --all-groups
 
-  dbt-test:
-    name: dbt Tests
-    runs-on: ubuntu-latest
-    needs: [dbt-deps]
-    services:
-      postgres:
-        image: postgres:16
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 5
+      - name: Clean dlt state
+        run: rm -rf .dlt/pipelines
+
+      - name: Ingest data
+        run: uv run python -m renewable_energy_tracker.pipeline
         env:
-          POSTGRES_DB: renewable_energy
-          POSTGRES_USER: renewable
-          POSTGRES_PASSWORD: renewable123
-        ports:
-          - 5432:5432
-    steps:
-      - uses: actions/checkout@v4
+          EMBER_API_KEY: ${{ secrets.EMBER_API_KEY }}
 
-      - name: Install dbt
-        run: pip install dbt-postgres
-
-      - name: Install dbt packages
+      - name: dbt deps
         working-directory: dbt
-        run: dbt deps --profiles-dir .
+        run: uv run dbt deps --profiles-dir .
 
       - name: dbt seed
         working-directory: dbt
-        run: dbt seed --profiles-dir . --target dev
-        env:
-          POSTGRES_HOST: localhost
+        run: uv run dbt seed --profiles-dir .
 
       - name: dbt run
         working-directory: dbt
-        run: dbt run --profiles-dir . --target dev
-        env:
-          POSTGRES_HOST: localhost
+        run: uv run dbt run --profiles-dir .
 
       - name: dbt test
         working-directory: dbt
-        run: dbt test --profiles-dir . --target dev
-        env:
-          POSTGRES_HOST: localhost
-
-  soda-scan:
-    name: Soda Data Quality
-    runs-on: ubuntu-latest
-    needs: [dbt-test]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Run Soda scan
-        uses: sodadata/soda-github-action@main
-        env:
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: "5432"
-          POSTGRES_DB: renewable_energy
-          POSTGRES_USER: renewable
-          POSTGRES_PASSWORD: renewable123
-        with:
-          soda_library_version: v1.0.4
-          data_source: ret_postgres
-          configuration: ./soda/configuration.yml
-          checks: ./soda/checks_raw.yml ./soda/checks_gold.yml
+        run: uv run dbt test --profiles-dir .

@@ -11,11 +11,9 @@ target-path: "target"
 
 models:
   renewable_energy_tracker:
-    bronze:
+    staging:
       +materialized: view
-    silver:
-      +materialized: view
-    gold:
+    marts:
       +materialized: table
 
 seeds:
@@ -23,11 +21,5 @@ seeds:
     +schema: seed
 
 vars:
-  entsoe_domain_map:
-    DE: "10Y1001A1001A83F"
-    FR: "10YFR-RTE------C"
-    ES: "10YES-REE------0"
-    DK: "10Y1001A1001A65H"
-    NO: "10YNO-0--------C"
-    NL: "10YNL----------L"
+  dbt_date:time_zone: "UTC"
   grid_avg_emission_factor: 0.45

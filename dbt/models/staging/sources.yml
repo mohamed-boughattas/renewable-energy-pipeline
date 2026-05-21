@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: main
+    tables:
+      - name: raw_monthly_generation
+      - name: raw_monthly_capacity
+      - name: raw_monthly_demand
+      - name: raw_monthly_emissions
+      - name: raw_monthly_carbon_intensity

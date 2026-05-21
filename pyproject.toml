@@ -1,20 +1,19 @@
 [project]
 name = "renewable-energy-tracker"
 version = "0.1.0"
-description = "Renewable energy production tracker for European countries using ENTSO-E data"
+description = "Renewable energy production tracker using Ember Climate data"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "pandas>=2.2",
+    "polars>=1.0",
     "pydantic>=2.10",
     "pydantic-settings>=2.7",
     "pandera>=0.22",
     "shiny>=1.2",
     "great-tables>=0.16",
-    "psycopg2-binary>=2.9",
-    "lxml>=5.3",
-    "dlt[postgres]>=1.0",
-    "dbt-core>=1.8",
+    "duckdb>=1.0",
+    "dlt[duckdb]>=1.0",
+    "dbt-duckdb>=1.8",
 ]
 
 [dependency-groups]
@@ -23,8 +22,7 @@ dev = [
     "ty>=0.0.34",
     "pytest>=8.3",
     "pytest-cov>=6.0",
-    "pandas-stubs>=2.2",
-    "soda-postgres>=4.3",
+    "soda-duckdb>=4.3",
 ]
 
 [build-system]
@@ -44,9 +42,8 @@ python-version = "3.12"
 [tool.ty.analysis]
 replace-imports-with-any = [
     "dlt.**",
-    "lxml.**",
     "shiny.**",
-    "psycopg2.**",
+    "duckdb.**",
     "pandera.**",
 ]
 

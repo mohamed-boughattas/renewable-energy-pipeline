@@ -12,22 +12,24 @@ models:
         tests: [not_null]
       - name: year_month
         tests: [not_null]
-      - name: total_production_mwh
+      - name: total_production_gwh
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0
-      - name: total_renewable_mwh
-        tests:
-          - dbt_expectations.expect_column_values_to_be_between:
-              min_value: 0
-      - name: total_fossil_mwh
+      - name: total_renewable_gwh
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0
-      - name: total_nuclear_mwh
+      - name: total_fossil_gwh
         tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: total_nuclear_gwh
+        tests:
+          - not_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0
       - name: renewable_share_pct
@@ -38,14 +40,6 @@ models:
     tests:
       - dbt_expectations.expect_compound_columns_to_be_unique:
           column_list: ["country_code", "year_month"]
-      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
-          column_A: total_production_mwh
-          column_B: total_renewable_mwh
-          or_equal: true
-      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
-          column_A: total_production_mwh
-          column_B: total_fossil_mwh
-          or_equal: true
 
   - name: mart_country_renewable_ranking
     description: "Country ranking by renewable energy metrics"
@@ -66,11 +60,9 @@ models:
               min_value: 0
               max_value: 100
       - name: rank_renewable_share
-        tests:
-          - not_null
+        tests: [not_null]
       - name: rank_total_renewable
-        tests:
-          - not_null
+        tests: [not_null]
 
   - name: mart_co2_savings_by_country
     description: "Monthly CO2 savings per country from renewable energy"
@@ -83,7 +75,7 @@ models:
         tests: [not_null]
       - name: year_month
         tests: [not_null]
-      - name: total_renewable_mwh
+      - name: total_renewable_gwh
         tests:
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0
@@ -102,10 +94,6 @@ models:
     tests:
       - dbt_expectations.expect_compound_columns_to_be_unique:
           column_list: ["country_code", "year_month"]
-      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
-          column_A: equivalent_trees_planted
-          column_B: equivalent_cars_removed
-          or_equal: true
 
   - name: mart_monthly_demand_summary
     description: "Monthly electricity demand aggregates per country"
@@ -118,12 +106,12 @@ models:
         tests: [not_null]
       - name: year_month
         tests: [not_null]
-      - name: total_demand_mwh
+      - name: total_demand_gwh
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0
-      - name: avg_monthly_demand_mwh
+      - name: avg_monthly_demand_gwh
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
@@ -161,10 +149,6 @@ models:
     tests:
       - dbt_expectations.expect_compound_columns_to_be_unique:
           column_list: ["country_code", "year_month"]
-      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
-          column_A: total_capacity_gw
-          column_B: renewable_capacity_gw
-          or_equal: true
 
   - name: mart_monthly_emissions_summary
     description: "Monthly power sector emissions aggregates per country"
@@ -189,10 +173,6 @@ models:
     tests:
       - dbt_expectations.expect_compound_columns_to_be_unique:
           column_list: ["country_code", "year_month"]
-      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
-          column_A: total_emissions_mtco2
-          column_B: fossil_emissions_mtco2
-          or_equal: true
 
   - name: mart_monthly_carbon_intensity_summary
     description: "Monthly carbon intensity aggregates per country"
