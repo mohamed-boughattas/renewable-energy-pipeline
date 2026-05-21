@@ -75,4 +75,3 @@ Ember API → dlt (raw_monthly_*) → dbt staging/ → dbt marts/ → Shiny
 - `ty` stub-less deps handled via `[tool.ty.analysis] replace-imports-with-any` (dlt, shiny, duckdb, pandera)
 - `Settings()` raises `pydantic.ValidationError` if `EMBER_API_KEY` is missing; guarded with `# ty: ignore[missing-argument]`
 - DuckDB SQL: `ROUND(double, int)` fails — cast first: `ROUND(value::numeric, 2)`
-- Stale Soda v3 files exist (`soda/configuration.yml`, `soda/checks_*.yml`) — **do not use**; only `soda/contracts/` and `soda/ds_config.yml` are current
