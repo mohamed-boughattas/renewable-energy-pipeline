@@ -10,8 +10,8 @@ from renewable_energy_pipeline.config import EMBER_BASE_URL, EMBER_ENDPOINTS
 
 
 def _parse_date(date_str: str) -> tuple[int, int]:
-    year, month = date_str.split("-")
-    return int(year), int(month)
+    parts = date_str.split("-")
+    return int(parts[0]), int(parts[1])
 
 
 def _fetch_generation(api_key: str) -> Iterator[dict]:
