@@ -24,6 +24,8 @@ destination.duckdb.credentials = "data/renewable_energy.duckdb"
 sources.ember_source.api_key = "${EMBER_API_KEY}"
 ```
 
+`data/` directory must exist before ingest — DuckDB creates the file but not the parent directory.
+
 ## Commands
 
 `just <recipe>` is the only interface. Run `just --list` to see all recipes.
@@ -33,13 +35,17 @@ sources.ember_source.api_key = "${EMBER_API_KEY}"
 | `check` | lint → typecheck → test (CI order) |
 | `lint` / `lint-fix` | ruff check / fix |
 | `typecheck` | ty check (src/ only) |
-| `test` / `test-cov` | pytest unit tests / with coverage |
+| `test` | pytest unit tests (ignores `tests/integration/`) |
+| `test-all` | pytest all tests including integration |
+| `test-cov` | unit tests with coverage |
 | `setup` | copy .env + uv sync |
 | `ingest` | dlt pipeline (Ember → DuckDB); clears `.dlt/pipelines/` |
 | `dbt-deps` / `dbt-seed` / `dbt-run` / `dbt-test` / `dbt-full` | dbt lifecycle |
 | `soda-all` | Soda contract verify |
 | `dashboard` | Shiny app |
 | `all` | ingest → dbt-full → soda-all → dashboard |
+
+CI runs `pytest -v` (no `--ignore`), so integration tests run in CI.
 
 ## Architecture
 
@@ -58,6 +64,11 @@ Ember API → dlt (raw_monthly_*) → dbt staging/ → dbt marts/ → Shiny
 
 **Raw table names:** `raw_monthly_generation`, `raw_monthly_capacity`, `raw_monthly_demand`, `raw_monthly_emissions`, `raw_monthly_carbon_intensity`
 
+## Testing
+
+- `conftest.py` has an **autouse fixture** (`mock_settings_env`) that patches `get_settings()` with a mock — tests never instantiate real `Settings()` and don't need `EMBER_API_KEY`
+- To add a test that needs a real DuckDB, provide duckdb_path explicitly and ensure the file exists
+
 ## dbt specifics
 
 - Run from `dbt/` via `cd dbt && uv run dbt ... --profiles-dir .`
@@ -66,10 +77,11 @@ Ember API → dlt (raw_monthly_*) → dbt staging/ → dbt marts/ → Shiny
 - `dbt_project.yml` vars: `dbt_date:time_zone: "UTC"` (required by `metaplane/dbt_expectations` freshness tests)
 - Seeds: `{{ ref('countries') }}` and `{{ ref('energy_sources') }}` — land in `main_seed` schema
 - `metaplane/dbt_expectations` (not `calogica`)
+- `co2_avoided` macro uses `grid_avg_emission_factor` var (default 0.45) from `dbt_project.yml`
 
 ## Gotchas
 
-- **Ember uses 3-letter ISO codes** (DEU, FRA, ESP) — seeds and staging models use these
+- **Ember uses 3-letter ISO codes** (DEU, FRA, ESP) — seeds and staging models use these. Staging models JOIN on `country_code = countries.code`, so 2-letter codes silently produce empty results
 - **`ingest` clears `.dlt/pipelines/`** to prevent stale incremental state from skipping new rows
 - **`just setup` uses `;` not `&&`** — `uv sync` runs even if `.env` already existed
 - `ty` stub-less deps handled via `[tool.ty.analysis] replace-imports-with-any` (dlt, shiny, duckdb, pandera)
