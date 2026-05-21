@@ -1,0 +1,228 @@
+version: 2
+
+models:
+  - name: stg_monthly_generation
+    description: "Cleaned monthly generation with country and source details"
+    columns:
+      - name: id
+        tests: [not_null, unique]
+      - name: country_code
+        tests:
+          - not_null
+          - relationships:
+              to: ref('countries')
+              field: code
+          - dbt_expectations.expect_column_value_lengths_to_equal:
+              value: 3
+          - dbt_expectations.expect_column_values_to_match_regex:
+              regex: "^[A-Z]{3}$"
+      - name: source_series
+        tests:
+          - not_null
+          - relationships:
+              to: ref('energy_sources')
+              field: code
+      - name: category
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: ['renewable', 'fossil', 'nuclear', 'other']
+      - name: generation_twh
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: share_of_generation_pct
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 100
+      - name: period
+        tests: [not_null]
+    tests:
+      - dbt_expectations.expect_grouped_row_values_to_have_recent_data:
+          group_by: [country_code]
+          timestamp_column: period
+          datepart: month
+          interval: 3
+
+  - name: stg_monthly_renewable_share
+    description: "Monthly renewable share per country"
+    columns:
+      - name: country_code
+        tests: [not_null]
+      - name: period
+        tests: [not_null]
+      - name: renewable_twh
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: fossil_twh
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: nuclear_twh
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: total_twh
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: renewable_share_pct
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 100
+    tests:
+      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
+          column_A: total_twh
+          column_B: renewable_twh
+          or_equal: true
+      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
+          column_A: total_twh
+          column_B: fossil_twh
+          or_equal: true
+      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
+          column_A: total_twh
+          column_B: nuclear_twh
+          or_equal: true
+      - dbt_expectations.expect_compound_columns_to_be_unique:
+          column_list: ["country_code", "period"]
+
+  - name: stg_monthly_demand
+    description: "Cleaned monthly electricity demand with country details"
+    columns:
+      - name: id
+        tests: [not_null, unique]
+      - name: country_code
+        tests:
+          - not_null
+          - relationships:
+              to: ref('countries')
+              field: code
+          - dbt_expectations.expect_column_value_lengths_to_equal:
+              value: 3
+      - name: period
+        tests: [not_null]
+      - name: demand_twh
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: is_aggregate_entity
+        tests: [not_null]
+    tests:
+      - dbt_expectations.expect_grouped_row_values_to_have_recent_data:
+          group_by: [country_code]
+          timestamp_column: period
+          datepart: month
+          interval: 3
+
+  - name: stg_monthly_capacity
+    description: "Cleaned monthly installed capacity with country and source details"
+    columns:
+      - name: id
+        tests: [not_null, unique]
+      - name: country_code
+        tests:
+          - not_null
+          - relationships:
+              to: ref('countries')
+              field: code
+          - dbt_expectations.expect_column_value_lengths_to_equal:
+              value: 3
+      - name: source_series
+        tests:
+          - not_null
+          - relationships:
+              to: ref('energy_sources')
+              field: code
+      - name: category
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: ['renewable', 'fossil', 'nuclear', 'other']
+      - name: capacity_gw
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: period
+        tests: [not_null]
+    tests:
+      - dbt_expectations.expect_grouped_row_values_to_have_recent_data:
+          group_by: [country_code]
+          timestamp_column: period
+          datepart: month
+          interval: 3
+
+  - name: stg_monthly_emissions
+    description: "Cleaned monthly power sector emissions with country and source details"
+    columns:
+      - name: id
+        tests: [not_null, unique]
+      - name: country_code
+        tests:
+          - not_null
+          - relationships:
+              to: ref('countries')
+              field: code
+          - dbt_expectations.expect_column_value_lengths_to_equal:
+              value: 3
+      - name: source_series
+        tests:
+          - not_null
+          - relationships:
+              to: ref('energy_sources')
+              field: code
+      - name: category
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: ['renewable', 'fossil', 'nuclear', 'other']
+      - name: emissions_mtco2
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: share_of_emissions_pct
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 100
+      - name: period
+        tests: [not_null]
+    tests:
+      - dbt_expectations.expect_grouped_row_values_to_have_recent_data:
+          group_by: [country_code]
+          timestamp_column: period
+          datepart: month
+          interval: 3
+
+  - name: stg_monthly_carbon_intensity
+    description: "Cleaned monthly carbon intensity with country details"
+    columns:
+      - name: id
+        tests: [not_null, unique]
+      - name: country_code
+        tests:
+          - not_null
+          - relationships:
+              to: ref('countries')
+              field: code
+          - dbt_expectations.expect_column_value_lengths_to_equal:
+              value: 3
+      - name: period
+        tests: [not_null]
+      - name: emissions_intensity_gco2_per_kwh
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: is_aggregate_entity
+        tests: [not_null]
+    tests:
+      - dbt_expectations.expect_grouped_row_values_to_have_recent_data:
+          group_by: [country_code]
+          timestamp_column: period
+          datepart: month
+          interval: 3

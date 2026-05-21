@@ -1,0 +1,32 @@
+dataset: duckdb_ds/data/renewable_energy/main/stg_monthly_demand
+
+checks:
+  - row_count:
+
+columns:
+  - name: id
+    checks:
+      - missing:
+  - name: country_code
+    checks:
+      - missing:
+  - name: country_name
+    checks:
+      - missing:
+  - name: region
+    checks:
+      - missing:
+  - name: period
+    checks:
+      - missing:
+  - name: demand_twh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: is_aggregate_entity
+    checks:
+      - missing:
+  - name: fetched_at
+    checks:
+      - missing:

@@ -1,0 +1,222 @@
+version: 2
+
+models:
+  - name: mart_monthly_production_summary
+    description: "Monthly production aggregates with renewable share per country"
+    columns:
+      - name: country_code
+        tests: [not_null]
+      - name: country_name
+        tests: [not_null]
+      - name: region
+        tests: [not_null]
+      - name: year_month
+        tests: [not_null]
+      - name: total_production_mwh
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: total_renewable_mwh
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: total_fossil_mwh
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: total_nuclear_mwh
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: renewable_share_pct
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 100
+    tests:
+      - dbt_expectations.expect_compound_columns_to_be_unique:
+          column_list: ["country_code", "year_month"]
+      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
+          column_A: total_production_mwh
+          column_B: total_renewable_mwh
+          or_equal: true
+      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
+          column_A: total_production_mwh
+          column_B: total_fossil_mwh
+          or_equal: true
+
+  - name: mart_country_renewable_ranking
+    description: "Country ranking by renewable energy metrics"
+    columns:
+      - name: country_code
+        tests:
+          - not_null
+          - unique
+          - dbt_expectations.expect_column_value_lengths_to_equal:
+              value: 3
+      - name: country_name
+        tests: [not_null]
+      - name: region
+        tests: [not_null]
+      - name: avg_renewable_share_pct
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 100
+      - name: rank_renewable_share
+        tests:
+          - not_null
+      - name: rank_total_renewable
+        tests:
+          - not_null
+
+  - name: mart_co2_savings_by_country
+    description: "Monthly CO2 savings per country from renewable energy"
+    columns:
+      - name: country_code
+        tests: [not_null]
+      - name: country_name
+        tests: [not_null]
+      - name: region
+        tests: [not_null]
+      - name: year_month
+        tests: [not_null]
+      - name: total_renewable_mwh
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: co2_avoided_tons
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: equivalent_cars_removed
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: equivalent_trees_planted
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+    tests:
+      - dbt_expectations.expect_compound_columns_to_be_unique:
+          column_list: ["country_code", "year_month"]
+      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
+          column_A: equivalent_trees_planted
+          column_B: equivalent_cars_removed
+          or_equal: true
+
+  - name: mart_monthly_demand_summary
+    description: "Monthly electricity demand aggregates per country"
+    columns:
+      - name: country_code
+        tests: [not_null]
+      - name: country_name
+        tests: [not_null]
+      - name: region
+        tests: [not_null]
+      - name: year_month
+        tests: [not_null]
+      - name: total_demand_mwh
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: avg_monthly_demand_mwh
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+    tests:
+      - dbt_expectations.expect_compound_columns_to_be_unique:
+          column_list: ["country_code", "year_month"]
+
+  - name: mart_monthly_capacity_summary
+    description: "Monthly installed capacity aggregates per country"
+    columns:
+      - name: country_code
+        tests: [not_null]
+      - name: country_name
+        tests: [not_null]
+      - name: region
+        tests: [not_null]
+      - name: year_month
+        tests: [not_null]
+      - name: total_capacity_gw
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: renewable_capacity_gw
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: fossil_capacity_gw
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+    tests:
+      - dbt_expectations.expect_compound_columns_to_be_unique:
+          column_list: ["country_code", "year_month"]
+      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
+          column_A: total_capacity_gw
+          column_B: renewable_capacity_gw
+          or_equal: true
+
+  - name: mart_monthly_emissions_summary
+    description: "Monthly power sector emissions aggregates per country"
+    columns:
+      - name: country_code
+        tests: [not_null]
+      - name: country_name
+        tests: [not_null]
+      - name: region
+        tests: [not_null]
+      - name: year_month
+        tests: [not_null]
+      - name: total_emissions_mtco2
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: fossil_emissions_mtco2
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+    tests:
+      - dbt_expectations.expect_compound_columns_to_be_unique:
+          column_list: ["country_code", "year_month"]
+      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
+          column_A: total_emissions_mtco2
+          column_B: fossil_emissions_mtco2
+          or_equal: true
+
+  - name: mart_monthly_carbon_intensity_summary
+    description: "Monthly carbon intensity aggregates per country"
+    columns:
+      - name: country_code
+        tests: [not_null]
+      - name: country_name
+        tests: [not_null]
+      - name: region
+        tests: [not_null]
+      - name: year_month
+        tests: [not_null]
+      - name: avg_intensity_gco2_per_kwh
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: min_intensity_gco2_per_kwh
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: max_intensity_gco2_per_kwh
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+    tests:
+      - dbt_expectations.expect_compound_columns_to_be_unique:
+          column_list: ["country_code", "year_month"]

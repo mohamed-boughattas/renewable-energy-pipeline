@@ -1,0 +1,30 @@
+dataset: duckdb_ds/data/renewable_energy/main/raw_monthly_demand
+
+checks:
+  - row_count:
+
+columns:
+  - name: country_code
+    checks:
+      - missing:
+  - name: country_name
+    checks:
+      - missing:
+  - name: period
+    checks:
+      - missing:
+      - invalid:
+          valid_min: "2000-01"
+  - name: demand_twh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: is_aggregate_entity
+    checks:
+      - missing:
+      - invalid:
+          valid_values: [true, false]
+  - name: fetched_at
+    checks:
+      - missing:

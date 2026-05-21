@@ -1,0 +1,59 @@
+dataset: duckdb_ds/data/renewable_energy/main/mart_monthly_production_summary
+
+checks:
+  - row_count:
+
+columns:
+  - name: country_code
+    checks:
+      - missing:
+  - name: country_name
+    checks:
+      - missing:
+  - name: region
+    checks:
+      - missing:
+  - name: year_month
+    checks:
+      - missing:
+  - name: total_renewable_mwh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: total_fossil_mwh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: total_nuclear_mwh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: total_production_mwh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: avg_monthly_renewable_twh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: avg_monthly_fossil_twh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: avg_monthly_total_twh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: renewable_share_pct
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+          valid_max: 100

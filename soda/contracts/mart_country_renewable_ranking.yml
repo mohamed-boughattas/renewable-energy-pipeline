@@ -1,0 +1,46 @@
+dataset: duckdb_ds/data/renewable_energy/main/mart_country_renewable_ranking
+
+checks:
+  - row_count:
+
+columns:
+  - name: country_code
+    checks:
+      - missing:
+  - name: country_name
+    checks:
+      - missing:
+  - name: region
+    checks:
+      - missing:
+  - name: avg_renewable_share_pct
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+          valid_max: 100
+  - name: avg_monthly_production_mwh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: total_production_mwh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: total_renewable_mwh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: rank_renewable_share
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: rank_total_renewable
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0

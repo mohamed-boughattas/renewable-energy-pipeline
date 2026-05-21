@@ -1,0 +1,33 @@
+dataset: duckdb_ds/data/renewable_energy/main/mart_monthly_carbon_intensity_summary
+
+checks:
+  - row_count:
+
+columns:
+  - name: country_code
+    checks:
+      - missing:
+  - name: country_name
+    checks:
+      - missing:
+  - name: region
+    checks:
+      - missing:
+  - name: year_month
+    checks:
+      - missing:
+  - name: avg_intensity_gco2_per_kwh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: min_intensity_gco2_per_kwh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: max_intensity_gco2_per_kwh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0

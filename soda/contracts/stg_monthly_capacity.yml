@@ -1,0 +1,49 @@
+dataset: duckdb_ds/data/renewable_energy/main/stg_monthly_capacity
+
+checks:
+  - row_count:
+
+columns:
+  - name: id
+    checks:
+      - missing:
+  - name: country_code
+    checks:
+      - missing:
+  - name: country_name
+    checks:
+      - missing:
+  - name: region
+    checks:
+      - missing:
+  - name: source_series
+    checks:
+      - missing:
+  - name: source_name
+    checks:
+      - missing:
+  - name: category
+    checks:
+      - missing:
+  - name: period
+    checks:
+      - missing:
+  - name: capacity_gw
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: capacity_w_per_capita
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: is_aggregate_entity
+    checks:
+      - missing:
+  - name: is_aggregate_series
+    checks:
+      - missing:
+  - name: fetched_at
+    checks:
+      - missing:

@@ -1,0 +1,43 @@
+dataset: duckdb_ds/data/renewable_energy/main/mart_monthly_capacity_summary
+
+checks:
+  - row_count:
+
+columns:
+  - name: country_code
+    checks:
+      - missing:
+  - name: country_name
+    checks:
+      - missing:
+  - name: region
+    checks:
+      - missing:
+  - name: year_month
+    checks:
+      - missing:
+  - name: renewable_capacity_gw
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: fossil_capacity_gw
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: total_capacity_gw
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: avg_renewable_capacity_gw
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: avg_total_capacity_gw
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0

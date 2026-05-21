@@ -1,0 +1,28 @@
+dataset: duckdb_ds/data/renewable_energy/main/mart_monthly_demand_summary
+
+checks:
+  - row_count:
+
+columns:
+  - name: country_code
+    checks:
+      - missing:
+  - name: country_name
+    checks:
+      - missing:
+  - name: region
+    checks:
+      - missing:
+  - name: year_month
+    checks:
+      - missing:
+  - name: total_demand_mwh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: avg_monthly_demand_mwh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0

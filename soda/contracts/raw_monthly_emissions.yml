@@ -1,0 +1,44 @@
+dataset: duckdb_ds/data/renewable_energy/main/raw_monthly_emissions
+
+checks:
+  - row_count:
+
+columns:
+  - name: country_code
+    checks:
+      - missing:
+  - name: country_name
+    checks:
+      - missing:
+  - name: source_series
+    checks:
+      - missing:
+  - name: period
+    checks:
+      - missing:
+      - invalid:
+          valid_min: "2000-01"
+  - name: emissions_mtco2
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: share_of_emissions_pct
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+          valid_max: 100
+  - name: is_aggregate_entity
+    checks:
+      - missing:
+      - invalid:
+          valid_values: [true, false]
+  - name: is_aggregate_series
+    checks:
+      - missing:
+      - invalid:
+          valid_values: [true, false]
+  - name: fetched_at
+    checks:
+      - missing:

@@ -1,0 +1,129 @@
+checks for stg_monthly_generation:
+  - row_count > 0:
+      name: Table is not empty
+
+  - missing_count(id) = 0:
+      name: No missing IDs
+
+  - missing_count(country_code) = 0:
+      name: No missing country codes
+
+  - missing_count(country_name) = 0:
+      name: No missing country names
+
+  - missing_count(region) = 0:
+      name: No missing regions
+
+  - missing_count(source_series) = 0:
+      name: No missing source series
+
+  - missing_count(generation_twh) = 0:
+      name: No missing generation values
+
+  - invalid_percent(generation_twh) = 0:
+      valid min: 0
+      name: Generation is non-negative
+
+  - duplicate_count(country_code, source_series, period) = 0:
+      name: No duplicate country/source/period entries
+
+checks for stg_monthly_renewable_share:
+  - row_count > 0:
+      name: Table is not empty
+
+  - missing_count(country_code) = 0:
+      name: No missing country codes
+
+  - missing_count(period) = 0:
+      name: No missing periods
+
+  - missing_count(renewable_twh) = 0:
+      name: No missing renewable values
+
+  - missing_count(total_twh) = 0:
+      name: No missing total values
+
+  - invalid_percent(renewable_share_pct) = 0:
+      valid min: 0
+      valid max: 100
+      name: Renewable share is 0-100%
+
+  - min(renewable_twh) >= 0:
+      name: Renewable TWh is non-negative
+
+  - min(total_twh) >= 0:
+      name: Total TWh is non-negative
+
+checks for stg_monthly_demand:
+  - row_count > 0:
+      name: Table is not empty
+
+  - missing_count(country_code) = 0:
+      name: No missing country codes
+
+  - missing_count(period) = 0:
+      name: No missing periods
+
+  - missing_count(demand_twh) = 0:
+      name: No missing demand values
+
+  - duplicate_count(country_code, period) = 0:
+      name: No duplicate country/period entries
+
+checks for stg_monthly_capacity:
+  - row_count > 0:
+      name: Table is not empty
+
+  - missing_count(country_code) = 0:
+      name: No missing country codes
+
+  - missing_count(source_series) = 0:
+      name: No missing source series
+
+  - missing_count(period) = 0:
+      name: No missing periods
+
+  - missing_count(capacity_gw) = 0:
+      name: No missing capacity values
+
+  - invalid_percent(capacity_gw) = 0:
+      valid min: 0
+      name: Capacity is non-negative
+
+  - duplicate_count(country_code, source_series, period) = 0:
+      name: No duplicate country/source/period entries
+
+checks for stg_monthly_emissions:
+  - row_count > 0:
+      name: Table is not empty
+
+  - missing_count(country_code) = 0:
+      name: No missing country codes
+
+  - missing_count(source_series) = 0:
+      name: No missing source series
+
+  - missing_count(period) = 0:
+      name: No missing periods
+
+  - missing_count(emissions_mtco2) = 0:
+      name: No missing emissions values
+
+  - duplicate_count(country_code, source_series, period) = 0:
+      name: No duplicate country/source/period entries
+
+checks for stg_monthly_carbon_intensity:
+  - row_count > 0:
+      name: Table is not empty
+
+  - missing_count(country_code) = 0:
+      name: No missing country codes
+
+  - missing_count(period) = 0:
+      name: No missing periods
+
+  - missing_count(emissions_intensity_gco2_per_kwh) = 0:
+      name: No missing intensity values
+
+  - duplicate_count(country_code, period) = 0:
+      name: No duplicate country/period entries

@@ -1,0 +1,4 @@
+type: duckdb
+name: duckdb_ds
+connection:
+    database: data/renewable_energy.duckdb

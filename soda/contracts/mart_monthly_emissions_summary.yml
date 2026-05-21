@@ -1,0 +1,38 @@
+dataset: duckdb_ds/data/renewable_energy/main/mart_monthly_emissions_summary
+
+checks:
+  - row_count:
+
+columns:
+  - name: country_code
+    checks:
+      - missing:
+  - name: country_name
+    checks:
+      - missing:
+  - name: region
+    checks:
+      - missing:
+  - name: year_month
+    checks:
+      - missing:
+  - name: fossil_emissions_mtco2
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: total_emissions_mtco2
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: avg_fossil_emissions_mtco2
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: avg_total_emissions_mtco2
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0

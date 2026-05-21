@@ -1,0 +1,38 @@
+dataset: duckdb_ds/data/renewable_energy/main/mart_co2_savings_by_country
+
+checks:
+  - row_count:
+
+columns:
+  - name: country_code
+    checks:
+      - missing:
+  - name: country_name
+    checks:
+      - missing:
+  - name: region
+    checks:
+      - missing:
+  - name: year_month
+    checks:
+      - missing:
+  - name: total_renewable_mwh
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: co2_avoided_tons
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: equivalent_cars_removed
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
+  - name: equivalent_trees_planted
+    checks:
+      - missing:
+      - invalid:
+          valid_min: 0
