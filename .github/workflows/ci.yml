@@ -104,8 +104,10 @@ jobs:
           destination.duckdb.credentials = "data/renewable_energy.duckdb"
           EOF
 
-      - name: Clean dlt state
-        run: rm -rf .dlt/pipelines
+      - name: Clean pipeline state and database
+        run: |
+          rm -rf .dlt/pipelines
+          rm -f data/renewable_energy.duckdb
 
       - name: Run ingestion pipeline
         run: uv run python -m renewable_energy_pipeline.pipeline
