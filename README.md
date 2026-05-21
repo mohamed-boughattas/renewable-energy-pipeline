@@ -69,13 +69,26 @@ just setup
 # 4. Verify code quality
 just check
 
-# 5. Ingest data from Ember API
+# 5. Create dlt pipeline config (required before ingest)
+mkdir -p .dlt
+cat > .dlt/config.toml << 'EOF'
+pipeline_name = "ember_energy"
+dataset = "main"
+[normalize]
+newline_clearing = "during-load"
+EOF
+cat > .dlt/secrets.toml << 'EOF'
+destination.duckdb.credentials = "data/renewable_energy.duckdb"
+sources.ember_source.api_key = "${EMBER_API_KEY}"
+EOF
+
+# 6. Ingest data from Ember API
 just ingest
 
-# 6. Run dbt transformations
+# 7. Run dbt transformations
 just dbt-full
 
-# 7. Launch the Shiny dashboard
+# 8. Launch the Shiny dashboard
 just dashboard
 ```
 
@@ -109,6 +122,8 @@ renewable-energy-tracker/
 ├── .github/
 │   └── workflows/ci.yml             # CI: lint → typecheck → test → dbt
 ├── soda/                            # Soda data quality contracts
+│   ├── contracts/                   # Contract files per model
+│   └── ds_config.yml               # DuckDB data source config
 ├── src/
 │   └── renewable_energy_tracker/   # Python package
 │       ├── config.py                # Pydantic Settings
