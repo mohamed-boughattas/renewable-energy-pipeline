@@ -21,13 +21,16 @@ def _fetch_generation(api_key: str) -> Iterator[dict]:
     response.raise_for_status()
     data = response.json()
     for rec in data.get("data", []):
+        entity_code = rec.get("entity_code")
+        if not entity_code:
+            continue
         year, month = _parse_date(rec["date"])
         yield {
-            "country_code": rec.get("entity_code", ""),
+            "country_code": entity_code,
             "country_name": rec.get("entity", ""),
             "year": year,
             "month": month,
-            "series_name": rec.get("series", ""),
+            "series_name": rec.get("series") or "",
             "value": rec.get("generation_twh"),
             "is_aggregate_series": rec.get("is_aggregate_series", False),
             "fetched_at": datetime.now().isoformat(),
@@ -41,13 +44,16 @@ def _fetch_capacity(api_key: str) -> Iterator[dict]:
     response.raise_for_status()
     data = response.json()
     for rec in data.get("data", []):
+        entity_code = rec.get("entity_code")
+        if not entity_code:
+            continue
         year, month = _parse_date(rec["date"])
         yield {
-            "country_code": rec.get("entity_code", ""),
+            "country_code": entity_code,
             "country_name": rec.get("entity", ""),
             "year": year,
             "month": month,
-            "series_name": rec.get("series", ""),
+            "series_name": rec.get("series") or "",
             "value": rec.get("capacity_gw"),
             "is_aggregate_series": rec.get("is_aggregate_series", False),
             "fetched_at": datetime.now().isoformat(),
@@ -61,9 +67,12 @@ def _fetch_demand(api_key: str) -> Iterator[dict]:
     response.raise_for_status()
     data = response.json()
     for rec in data.get("data", []):
+        entity_code = rec.get("entity_code")
+        if not entity_code:
+            continue
         year, month = _parse_date(rec["date"])
         yield {
-            "country_code": rec.get("entity_code", ""),
+            "country_code": entity_code,
             "country_name": rec.get("entity", ""),
             "year": year,
             "month": month,
@@ -81,13 +90,16 @@ def _fetch_emissions(api_key: str) -> Iterator[dict]:
     response.raise_for_status()
     data = response.json()
     for rec in data.get("data", []):
+        entity_code = rec.get("entity_code")
+        if not entity_code:
+            continue
         year, month = _parse_date(rec["date"])
         yield {
-            "country_code": rec.get("entity_code", ""),
+            "country_code": entity_code,
             "country_name": rec.get("entity", ""),
             "year": year,
             "month": month,
-            "series_name": rec.get("series", ""),
+            "series_name": rec.get("series") or "",
             "value": rec.get("emissions_mtco2"),
             "is_aggregate_series": rec.get("is_aggregate_series", False),
             "fetched_at": datetime.now().isoformat(),
@@ -101,9 +113,12 @@ def _fetch_carbon_intensity(api_key: str) -> Iterator[dict]:
     response.raise_for_status()
     data = response.json()
     for rec in data.get("data", []):
+        entity_code = rec.get("entity_code")
+        if not entity_code:
+            continue
         year, month = _parse_date(rec["date"])
         yield {
-            "country_code": rec.get("entity_code", ""),
+            "country_code": entity_code,
             "country_name": rec.get("entity", ""),
             "year": year,
             "month": month,

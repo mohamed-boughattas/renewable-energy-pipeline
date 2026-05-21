@@ -29,6 +29,7 @@ test-cov:
 
 ingest:
     rm -rf .dlt/pipelines
+    rm -f data/renewable_energy.duckdb
     uv run python -m renewable_energy_pipeline.pipeline
 
 dbt-deps:

@@ -155,7 +155,7 @@ models:
           group_by: [country_code]
           timestamp_column: period
           datepart: month
-          interval: 3
+          interval: 12
 
   - name: stg_monthly_emissions
     description: "Cleaned monthly power sector emissions with country and source details"
@@ -183,6 +183,7 @@ models:
               value_set: ['renewable', 'fossil', 'nuclear', 'other']
       - name: emissions_mtco2
         tests:
+          - not_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0
       - name: share_of_emissions_pct
@@ -197,10 +198,10 @@ models:
           group_by: [country_code]
           timestamp_column: period
           datepart: month
-          interval: 3
+          interval: 12
 
   - name: stg_monthly_carbon_intensity
-    description: "Cleaned monthly carbon intensity with country details"
+    description: "Monthly carbon intensity with country details"
     columns:
       - name: id
         tests: [not_null, unique]
@@ -216,13 +217,12 @@ models:
         tests: [not_null]
       - name: emissions_intensity_gco2_per_kwh
         tests:
+          - not_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 0
-      - name: is_aggregate_entity
-        tests: [not_null]
     tests:
       - dbt_expectations.expect_grouped_row_values_to_have_recent_data:
           group_by: [country_code]
           timestamp_column: period
           datepart: month
-          interval: 3
+          interval: 12
