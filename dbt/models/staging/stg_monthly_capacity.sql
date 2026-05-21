@@ -9,7 +9,7 @@ SELECT
     es.name AS source_name,
     es.category,
     MAKE_DATE(rmc.year, rmc.month, 1) AS period,
-    rmc.value AS capacity_gw,
+    rmc.value::double AS capacity_gw,
     rmc.fetched_at
 FROM {{ source('raw', 'raw_monthly_capacity') }} rmc
 INNER JOIN {{ ref('countries') }} c ON rmc.country_code = c.code

@@ -9,10 +9,10 @@ SELECT
     es.name AS source_name,
     es.category,
     MAKE_DATE(rmg.year, rmg.month, 1) AS period,
-    rmg.value AS generation_twh,
+    rmg.value::double AS generation_twh,
     CASE
-        WHEN SUM(rmg.value) OVER (PARTITION BY rmg.country_code, rmg.year, rmg.month) > 0
-        THEN ROUND((rmg.value / SUM(rmg.value) OVER (PARTITION BY rmg.country_code, rmg.year, rmg.month)) * 100, 2)
+        WHEN SUM(rmg.value::double) OVER (PARTITION BY rmg.country_code, rmg.year, rmg.month) > 0
+        THEN ROUND((rmg.value::double / SUM(rmg.value::double) OVER (PARTITION BY rmg.country_code, rmg.year, rmg.month)) * 100, 2)
         ELSE 0
     END AS share_of_generation_pct,
     rmg.is_aggregate_series,

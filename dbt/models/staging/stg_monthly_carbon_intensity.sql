@@ -6,7 +6,7 @@ SELECT
     c.name AS country_name,
     c.region,
     MAKE_DATE(rmci.year, rmci.month, 1) AS period,
-    rmci.value AS emissions_intensity_gco2_per_kwh,
+    rmci.value::double AS emissions_intensity_gco2_per_kwh,
     rmci.fetched_at
 FROM {{ source('raw', 'raw_monthly_carbon_intensity') }} rmci
 INNER JOIN {{ ref('countries') }} c ON rmci.country_code = c.code
