@@ -77,7 +77,7 @@ jobs:
         run: rm -rf .dlt/pipelines
 
       - name: Ingest data
-        run: uv run python -m renewable_energy_tracker.pipeline
+        run: uv run python -m renewable_energy_pipeline.pipeline
         env:
           EMBER_API_KEY: ${{ secrets.EMBER_API_KEY }}
 

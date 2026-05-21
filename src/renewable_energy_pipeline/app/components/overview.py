@@ -2,7 +2,7 @@ import duckdb
 from shiny import Inputs, Outputs, Session, render, ui
 from shiny.reactive import calc
 
-from renewable_energy_tracker.config import get_settings
+from renewable_energy_pipeline.config import get_settings
 
 
 def overview_ui() -> ui.TagList:

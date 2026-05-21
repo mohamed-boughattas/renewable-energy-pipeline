@@ -1,25 +1,25 @@
 from shiny import App, Inputs, Outputs, Session, ui
 
-from renewable_energy_tracker.app.components.co2_savings import (
+from renewable_energy_pipeline.app.components.co2_savings import (
     co2_savings_server,
     co2_savings_ui,
 )
-from renewable_energy_tracker.app.components.comparison import (
+from renewable_energy_pipeline.app.components.comparison import (
     comparison_server,
     comparison_ui,
 )
-from renewable_energy_tracker.app.components.overview import (
+from renewable_energy_pipeline.app.components.overview import (
     overview_server,
     overview_ui,
 )
-from renewable_energy_tracker.app.components.timeseries import (
+from renewable_energy_pipeline.app.components.timeseries import (
     timeseries_server,
     timeseries_ui,
 )
 
 app_ui = ui.page_sidebar(
     ui.sidebar(
-        ui.h4("Renewable Energy Tracker"),
+        ui.h4("Renewable Energy Pipeline"),
         ui.p("Global energy production monitoring"),
         ui.hr(),
         ui.p("Data source: Ember Climate API"),
@@ -30,7 +30,7 @@ app_ui = ui.page_sidebar(
         ui.nav_panel("Country Comparison", comparison_ui()),
         ui.nav_panel("CO2 Savings", co2_savings_ui()),
     ),
-    title="Renewable Energy Tracker",
+    title="Renewable Energy Pipeline",
 )
 
 

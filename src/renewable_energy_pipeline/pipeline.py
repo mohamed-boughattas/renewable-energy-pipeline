@@ -6,7 +6,7 @@ from typing import Any
 import dlt
 from dlt.sources.helpers import requests
 
-from renewable_energy_tracker.config import EMBER_BASE_URL
+from renewable_energy_pipeline.config import EMBER_BASE_URL
 
 
 @dlt.source

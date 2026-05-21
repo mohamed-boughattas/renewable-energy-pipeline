@@ -1,7 +1,7 @@
-name: "renewable_energy_tracker"
+name: "renewable_energy_pipeline"
 version: "1.0.0"
 
-profile: "renewable_energy_tracker"
+profile: "renewable_energy_pipeline"
 
 model-paths: ["models"]
 seed-paths: ["seeds"]
@@ -10,14 +10,14 @@ macro-paths: ["macros"]
 target-path: "target"
 
 models:
-  renewable_energy_tracker:
+  renewable_energy_pipeline:
     staging:
       +materialized: view
     marts:
       +materialized: table
 
 seeds:
-  renewable_energy_tracker:
+  renewable_energy_pipeline:
     +schema: seed
 
 vars:

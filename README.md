@@ -1,4 +1,4 @@
-# Renewable Energy Production Tracker
+# Renewable Energy Production Pipeline
 
 A data pipeline and dashboard that tracks renewable energy production across European countries using Ember Climate API data.
 
@@ -57,7 +57,7 @@ Ember Climate API (JSON)
 ```bash
 # 1. Clone and enter directory
 git clone <repo-url>
-cd renewable_energy_tracker
+cd renewable_energy_pipeline
 
 # 2. Copy environment config and set your API key
 cp .env.example .env
@@ -114,7 +114,7 @@ All commands go through `just`. Run `just --list` to see everything.
 ## Project Structure
 
 ```
-renewable-energy-tracker/
+renewable-energy-pipeline/
 ├── justfile                          # Task runner recipes
 ├── pyproject.toml                    # uv project config + dependencies
 ├── .env.example                      # Environment variables template
@@ -125,7 +125,7 @@ renewable-energy-tracker/
 │   ├── contracts/                   # Contract files per model
 │   └── ds_config.yml               # DuckDB data source config
 ├── src/
-│   └── renewable_energy_tracker/   # Python package
+│   └── renewable_energy_pipeline/   # Python package
 │       ├── config.py                # Pydantic Settings
 │       ├── pipeline.py              # dlt ingestion source/resource
 │       ├── models/                  # Pydantic + Pandera schemas

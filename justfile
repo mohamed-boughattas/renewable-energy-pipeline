@@ -29,7 +29,7 @@ test-cov:
 
 ingest:
     rm -rf .dlt/pipelines
-    uv run python -m renewable_energy_tracker.pipeline
+    uv run python -m renewable_energy_pipeline.pipeline
 
 dbt-deps:
     cd dbt && uv run dbt deps
@@ -49,6 +49,6 @@ soda-all:
     uv run soda contract verify --contract soda/contracts/ --data-source soda/ds_config.yml
 
 dashboard:
-    uv run shiny run src/renewable_energy_tracker/app/app.py
+    uv run shiny run src/renewable_energy_pipeline/app/app.py
 
 all: ingest dbt-full soda-all dashboard

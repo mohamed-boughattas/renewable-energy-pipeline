@@ -1,7 +1,7 @@
 [project]
-name = "renewable-energy-tracker"
+name = "renewable-energy-pipeline"
 version = "0.1.0"
-description = "Renewable energy production tracker using Ember Climate data"
+description = "Renewable energy production pipeline using Ember Climate data"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

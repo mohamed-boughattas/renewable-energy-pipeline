@@ -1,4 +1,4 @@
-renewable_energy_tracker:
+renewable_energy_pipeline:
   target: dev
   outputs:
     dev:

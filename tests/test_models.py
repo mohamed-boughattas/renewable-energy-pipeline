@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from renewable_energy_tracker.models.energy import EmberRecord
+from renewable_energy_pipeline.models.energy import EmberRecord
 
 
 def test_ember_record_valid() -> None:

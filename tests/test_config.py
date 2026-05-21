@@ -1,4 +1,4 @@
-from renewable_energy_tracker.config import (
+from renewable_energy_pipeline.config import (
     EMBER_BASE_URL,
     EMISSION_FACTORS,
     SERIES_CATEGORIES,
