@@ -73,6 +73,24 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-groups
 
+      - name: Create data directory
+        run: mkdir -p data
+
+      - name: Create dlt config
+        run: |
+          mkdir -p .dlt
+          cat > .dlt/config.toml << 'EOF'
+          pipeline_name = "ember_energy"
+          dataset = "main"
+
+          [normalize]
+          newline_clearing = "during-load"
+          EOF
+          cat > .dlt/secrets.toml << 'EOF'
+          destination.duckdb.credentials = "data/renewable_energy.duckdb"
+          sources.ember_source.api_key = "${EMBER_API_KEY}"
+          EOF
+
       - name: Clean dlt state
         run: rm -rf .dlt/pipelines
 
