@@ -56,7 +56,7 @@ Ember Climate API (JSON)
 
 ```bash
 # 1. Clone and enter directory
-git clone <repo-url>
+git clone https://github.com/mohamed-boughattas/renewable-energy-pipeline.git
 cd renewable_energy_pipeline
 
 # 2. Copy environment config and set your API key
