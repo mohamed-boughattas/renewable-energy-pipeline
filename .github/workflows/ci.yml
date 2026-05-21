@@ -11,7 +11,8 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
@@ -28,7 +29,8 @@ jobs:
     name: Type Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
@@ -38,14 +40,15 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-groups
 
-      - name: ty
+      - name: Run ty
         run: uv run ty check src/
 
   test:
     name: Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
@@ -61,9 +64,18 @@ jobs:
   data-pipeline:
     name: Data Pipeline
     runs-on: ubuntu-latest
-    needs: [lint, typecheck, test]
+    needs:
+      - lint
+      - typecheck
+      - test
+
+    env:
+      EMBER_API_KEY: ${{ secrets.EMBER_API_KEY }}
+      SOURCES__EMBER_SOURCE__API_KEY: ${{ secrets.EMBER_API_KEY }}
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
@@ -79,38 +91,37 @@ jobs:
       - name: Create dlt config
         run: |
           mkdir -p .dlt
-          cat > .dlt/config.toml << 'EOF'
+
+          cat > .dlt/config.toml << EOF
           pipeline_name = "ember_energy"
           dataset = "main"
 
           [normalize]
           newline_clearing = "during-load"
           EOF
-          cat > .dlt/secrets.toml << 'EOF'
+
+          cat > .dlt/secrets.toml << EOF
           destination.duckdb.credentials = "data/renewable_energy.duckdb"
-          sources.ember_source.api_key = "${EMBER_API_KEY}"
           EOF
 
       - name: Clean dlt state
         run: rm -rf .dlt/pipelines
 
-      - name: Ingest data
+      - name: Run ingestion pipeline
         run: uv run python -m renewable_energy_pipeline.pipeline
-        env:
-          EMBER_API_KEY: ${{ secrets.EMBER_API_KEY }}
 
-      - name: dbt deps
+      - name: Install dbt dependencies
         working-directory: dbt
         run: uv run dbt deps --profiles-dir .
 
-      - name: dbt seed
+      - name: Run dbt seed
         working-directory: dbt
         run: uv run dbt seed --profiles-dir .
 
-      - name: dbt run
+      - name: Run dbt models
         working-directory: dbt
         run: uv run dbt run --profiles-dir .
 
-      - name: dbt test
+      - name: Run dbt tests
         working-directory: dbt
         run: uv run dbt test --profiles-dir .
